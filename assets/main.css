@@ -1,0 +1,91 @@
+html {
+  overflow-y: auto;
+  background: #dfe4ea;
+}
+
+body {
+  margin: 0;
+  color: #1f2933;
+  font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 28rem),
+    radial-gradient(circle at top right, rgba(31, 78, 121, 0.08), transparent 22rem),
+    linear-gradient(180deg, #e7ebf0 0%, #dde3ea 100%);
+}
+
+#__nuxt {
+  min-height: 100vh;
+}
+
+.v-application {
+  background: transparent !important;
+}
+
+.v-card,
+.v-sheet,
+.v-dialog > .v-overlay__content > .v-card {
+  border: 1px solid rgba(95, 109, 126, 0.18) !important;
+  box-shadow: 0 18px 42px rgba(42, 53, 70, 0.06) !important;
+  background: linear-gradient(180deg, rgba(250, 251, 253, 0.96) 0%, rgba(241, 244, 248, 0.96) 100%) !important;
+  backdrop-filter: blur(8px);
+}
+
+.v-card-title,
+.v-toolbar-title {
+  letter-spacing: 0;
+}
+
+.v-btn {
+  text-transform: none;
+  font-weight: 600;
+}
+
+.v-field--variant-outlined .v-field__outline {
+  --v-field-border-opacity: 0.4;
+}
+
+.v-field {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.v-chip {
+  font-weight: 600;
+}
+
+.v-table {
+  background: transparent !important;
+}
+
+.v-table > .v-table__wrapper > table > thead > tr > th {
+  color: #516173;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.v-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.page-enter-active,
+.page-leave-active,
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.page-enter-from,
+.page-leave-to,
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.v-table tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.v-table tbody tr:hover {
+  background: rgba(31, 78, 121, 0.08);
+}
