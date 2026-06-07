@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
+import TicketDetailsDialogLoader from '~/components/tickets/TicketDetailsDialogLoader.vue'
 import type { Ticket } from '~/types/api'
 
 definePageMeta({
   middleware: 'auth',
 })
 
-const TicketDetailsDialog = defineAsyncComponent(() => import('~/components/tickets/TicketDetailsDialog.vue'))
+const TicketDetailsDialog = defineAsyncComponent({
+  loader: () => import('~/components/tickets/TicketDetailsDialog.vue'),
+  loadingComponent: TicketDetailsDialogLoader,
+  delay: 80,
+})
 
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
@@ -46,9 +51,16 @@ onMounted(fetchTickets)
     <template v-if="authStore.isAdmin">
       <UiPageHeader
         :title="t('tickets.dashboardTitle')"
+        class="dashboard-page-header"
       >
         <template #actions>
-          <v-btn color="primary" prepend-icon="mdi-plus" to="/tickets/create">
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            to="/tickets/create"
+            size="large"
+            class="dashboard-new-ticket-btn"
+          >
             {{ t('tickets.newTicket') }}
           </v-btn>
         </template>
@@ -147,3 +159,45 @@ onMounted(fetchTickets)
     </template>
   </v-container>
 </template>
+
+<style scoped>
+.dashboard-page-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.dashboard-page-header :deep(> div:first-child) {
+  grid-column: 2;
+  text-align: center;
+}
+
+.dashboard-page-header :deep(.page-header__actions) {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.dashboard-page-header :deep(h1) {
+  font-size: clamp(2.15rem, 3vw, 3rem) !important;
+  line-height: 1.15;
+}
+
+.dashboard-new-ticket-btn {
+  min-width: 188px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-page-header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 18px;
+  }
+
+  .dashboard-page-header :deep(> div:first-child),
+  .dashboard-page-header :deep(.page-header__actions) {
+    grid-column: 1;
+    justify-self: center;
+  }
+}
+</style>

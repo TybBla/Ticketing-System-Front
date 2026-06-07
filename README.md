@@ -1,91 +1,58 @@
 # Ticketing system frontend
 
-Frontend aplikacji HelpDesk/Ticketing zbudowany w Nuxt, TypeScript, Vuetify i Pinia.
+Frontend aplikacji HelpDesk/Ticketing zbudowany w Nuxt 3/4, TypeScript, Vuetify 3/4 i Pinia. Aplikacja działa jako SPA, a zapytania do backendu ASP.NET Core przechodzą przez endpointy Nuxta `/api/...`.
 
-## Do zrobienia
-
-- Dodać testy jednostkowe w Vitest.
-- Dodać testy E2E w Playwright.
-- Rozważyć dedykowaną bibliotekę do wykresów, jeśli chcemy pewniej zaliczyć punkt za wizualizację danych.
-
-## Zrealizowane wymagania punktowane
-
-- `provide/inject`: globalne etykiety HelpDesk są dostarczane przez plugin i pobierane w composable.
-- Komponent generyczny: `components/ui/GenericStatList.vue`.
-- Komponent funkcyjny: `components/ui/StatusPill.ts`.
-- QR code dla konfiguracji 2FA admina: generowany z URI `otpauth://` przy użyciu biblioteki `qrcode`.
-- Drag & drop: tablica kanban zgłoszeń pozwala administratorowi przeciągać zgłoszenia między statusami.
-
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
-
-## Setup
-
-Make sure to install dependencies:
+## Uruchomienie
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Domyślnie frontend startuje pod `http://localhost:3000`.
 
-Build the application for production:
+## Weryfikacja
 
 ```bash
-# npm
+npm run test
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+## Mapa wymagań punktowanych
 
-```bash
-# npm
-npm run preview
+| Wymaganie | Realizacja | Gdzie pokazać |
+| --- | --- | --- |
+| Nuxt / metaframework | Projekt działa w Nuxt, CSR SPA, z proxy `/api/...` do backendu | `nuxt.config.ts`, `server/api/[...].ts` |
+| TypeScript | Typy DTO, enumy i komponenty pisane w TS | `types/api.ts`, komponenty `.vue` |
+| Vuetify | UI formularzy, tabel, kart, dialogów i nawigacji | `plugins/vuetify.ts`, widoki w `pages/` |
+| Pinia / storage | Autoryzacja, preferencje, monitoring i powiadomienia w store | `stores/auth.ts`, `stores/preferences.ts`, `stores/monitoring.ts` |
+| VueUse | Trwałe preferencje i logi przez `useLocalStorage` | `stores/preferences.ts`, `stores/monitoring.ts` |
+| Routing i middleware | Widoki admin/user oraz ochrona tras | `pages/`, `middleware/auth.ts`, `middleware/admin.ts` |
+| Composition API | `ref`, `computed`, `watch`, composables | `composables/`, `pages/index.vue` |
+| Komponenty | Podział na formularze, tabele, analitykę, layouty | `components/` |
+| Komponent asynchroniczny | Dialog szczegółów ładowany przez `defineAsyncComponent` z loaderem | `pages/index.vue`, `TicketDetailsDialogLoader.vue` |
+| Komponent generyczny | Lista statystyk oparta na funkcjach `getKey/getLabel/getValue` | `components/ui/GenericStatList.vue` |
+| Komponent funkcyjny | Status jako renderowany komponent funkcyjny | `components/ui/StatusPill.ts` |
+| Props / emits / slots | Tabela zgłoszeń, filtry i dialogi komunikują się przez props/emits/slot empty | `TicketTable.vue`, `TicketFilters.vue` |
+| Własny v-model | Dedykowany selector statusu zgłoszenia używa `defineModel` | `components/tickets/TicketStatusSelect.vue` |
+| Formularze i walidacja | Logowanie, 2FA, tworzenie zgłoszeń i użytkowników | `pages/login.vue`, `TicketForm.vue`, `UsersCreateDialog.vue` |
+| Własna dyrektywa | Autofocus pól formularza przez `v-focus` | `directives/focus.ts`, `plugins/vuetify.ts` |
+| Provide/Inject | Globalne etykiety domenowe HelpDesk | `plugins/helpdesk-labels.ts`, `useHelpdeskLabels.ts` |
+| Wielojęzykowość | Prosty słownik PL/EN i przełącznik języka | `utils/i18n.ts`, `LocaleSwitcher.vue` |
+| Ikony | Ikony Material Design w nawigacji, kartach i akcjach | `@mdi/font`, komponenty Vuetify |
+| Drag & drop | Tablica Kanban zmienia status zgłoszenia przez przeciąganie | `components/tickets/TicketKanbanBoard.vue` |
+| Teleport | Toast powiadomień renderowany do `body` | `components/notifications/NotificationToast.vue` |
+| Przejścia / animacje | Przejścia stron i animacja toastów | `nuxt.config.ts`, `NotificationToast.vue`, `assets/main.css` |
+| Wizualizacja danych | Wykres doughnut Chart.js oraz statystyki statusów | `TicketAnalytics.vue`, `utils/ticketAnalytics.ts` |
+| Vitest | Testy jednostkowe logiki analitycznej zgłoszeń | `tests/ticketAnalytics.test.ts` |
+| Monitoring lokalny | Rejestr błędów frontendu, liczniki, eksport JSON i zdarzenie testowe | `plugins/local-monitoring.client.ts`, `pages/admin/diagnostics.vue` |
+| QR 2FA | QR konfiguracji 2FA admina z biblioteki `qrcode` | `pages/login.vue` |
 
-# pnpm
-pnpm preview
+## Scenariusz prezentacji
 
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+1. Zalogować się jako admin.
+2. Pokazać panel zgłoszeń, wykresy, Kanban drag & drop i tabelę.
+3. Otworzyć szczegóły zgłoszenia ikoną oka.
+4. Przełączyć język PL/EN i jasny/ciemny motyw.
+5. Przejść do diagnostyki, dodać testowe zdarzenie i wyeksportować log.
+6. Pokazać testy: `npm run test`.

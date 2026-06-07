@@ -45,15 +45,9 @@ const { t } = useAppI18n()
         </td>
         <td>{{ labels.ticketCategories[ticket.category] }}</td>
         <td>
-          <v-select
+          <TicketsTicketStatusSelect
             :model-value="ticket.status"
-            :items="statusOptions"
-            item-title="title"
-            item-value="value"
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="status-select"
+            :status-options="statusOptions"
             @update:model-value="emit('update-status', ticket, $event)"
           />
         </td>
@@ -77,10 +71,3 @@ const { t } = useAppI18n()
     </tbody>
   </v-table>
 </template>
-
-<style scoped>
-.status-select {
-  min-width: 160px;
-}
-
-</style>

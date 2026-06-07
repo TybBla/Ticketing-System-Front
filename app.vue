@@ -6,13 +6,13 @@ const preferencesStore = usePreferencesStore()
 const { uiTheme } = storeToRefs(preferencesStore)
 const theme = useTheme()
 
-watch(
-  uiTheme,
-  (nextTheme) => {
-    theme.global.name.value = nextTheme
-  },
-  { immediate: true },
-)
+watchEffect(() => {
+  theme.change(uiTheme.value)
+
+  if (import.meta.client) {
+    document.documentElement.dataset.helpdeskTheme = uiTheme.value
+  }
+})
 </script>
 
 <template>

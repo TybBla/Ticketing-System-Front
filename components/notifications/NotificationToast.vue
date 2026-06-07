@@ -9,19 +9,21 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Transition name="toast-slide">
-    <v-alert
-      v-if="message"
-      class="notification-toast"
-      type="info"
-      variant="elevated"
-      border="start"
-      closable
-      @click:close="emit('close')"
-    >
-      {{ message }}
-    </v-alert>
-  </Transition>
+  <Teleport to="body">
+    <Transition name="toast-slide">
+      <v-alert
+        v-if="message"
+        class="notification-toast"
+        type="info"
+        variant="elevated"
+        border="start"
+        closable
+        @click:close="emit('close')"
+      >
+        {{ message }}
+      </v-alert>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped>

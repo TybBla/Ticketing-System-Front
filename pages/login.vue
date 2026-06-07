@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import QRCode from 'qrcode'
 import type { LoginResponse } from '~/types/api'
 import { getApiErrorMessage } from '~/utils/apiError'
@@ -11,8 +12,10 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const preferencesStore = usePreferencesStore()
 const { apiFetch } = useApi()
 const { t } = useAppI18n()
+const { uiTheme } = storeToRefs(preferencesStore)
 
 const email = ref('')
 const password = ref('')
@@ -24,6 +27,7 @@ const isTwoFactorStep = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref('')
 const qrCodeDataUrl = ref('')
+const isDarkTheme = computed(() => uiTheme.value === 'helpdeskDark')
 
 const loginRules = {
   email: [
@@ -149,20 +153,40 @@ watch(
 </script>
 
 <template>
-  <v-container class="fill-height login-page">
-    <v-row justify="center" align="center" class="w-100">
-      <v-col cols="12" sm="9" md="6" lg="4">
-        <v-card elevation="10" rounded="lg">
-          <v-card-item>
-            <v-card-title class="text-h4 font-weight-bold">
-              {{ t('app.title') }}
-            </v-card-title>
-            <v-card-subtitle>
-              {{ t('auth.subtitle') }}
-            </v-card-subtitle>
-          </v-card-item>
+  <v-container fluid class="login-page">
+    <div class="login-controls">
+      <I18nLocaleSwitcher />
+      <v-btn
+        :icon="isDarkTheme ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+        variant="tonal"
+        color="primary"
+        :aria-label="isDarkTheme ? t('app.lightTheme') : t('app.darkTheme')"
+        @click="preferencesStore.toggleUiTheme()"
+      />
+    </div>
 
-          <v-card-text>
+    <div class="login-shell">
+      <section class="login-brand-panel" aria-labelledby="login-title">
+        <p class="login-kicker">
+          {{ t('auth.panelLabel') }}
+        </p>
+        <h1 id="login-title">
+          {{ t('app.title') }}
+        </h1>
+        <p class="login-brand-copy">
+          {{ t('auth.subtitle') }}
+        </p>
+      </section>
+
+      <v-card class="login-card" elevation="0">
+        <v-card-text>
+          <div class="login-card__header">
+            <p>{{ t('auth.loginPanel') }}</p>
+            <h2>
+              {{ isTwoFactorStep ? t('auth.twoFactorTitle') : t('auth.signInTitle') }}
+            </h2>
+          </div>
+
             <v-alert
               v-if="errorMessage"
               type="error"
@@ -280,16 +304,141 @@ watch(
                 </v-btn>
               </div>
             </v-form>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+        </v-card-text>
+      </v-card>
+    </div>
   </v-container>
 </template>
 
 <style scoped>
 .login-page {
   min-height: 100vh;
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  overflow: hidden;
+}
+
+.login-page::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background-image:
+    linear-gradient(rgba(var(--v-theme-on-background), 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--v-theme-on-background), 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  pointer-events: none;
+}
+
+.login-controls {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.login-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 430px);
+  width: min(960px, 100%);
+  min-height: 390px;
+  overflow: hidden;
+  border: 1px solid var(--app-card-border);
+  border-radius: 8px;
+  background: var(--app-card-bg);
+  box-shadow: var(--app-card-shadow);
+}
+
+.login-brand-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 3.4vw, 42px);
+  border-right: 1px solid var(--app-card-border);
+  background:
+    linear-gradient(135deg, rgba(var(--v-theme-primary), 0.14), transparent 46%),
+    rgba(var(--v-theme-surface-bright), 0.28);
+}
+
+.login-kicker {
+  margin: 0 0 14px;
+  color: rgb(var(--v-theme-primary));
+  font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-brand-panel h1 {
+  max-width: 520px;
+  margin: 0;
+  color: rgb(var(--v-theme-on-surface));
+  font-size: clamp(2.25rem, 4.4vw, 3.6rem);
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.login-brand-copy {
+  max-width: 430px;
+  margin: 16px 0 0;
+  color: rgba(var(--v-theme-on-surface), 0.68);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.login-card {
+  display: flex;
+  align-items: center;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: rgba(var(--v-theme-surface), 0.48) !important;
+  backdrop-filter: none;
+}
+
+.login-card :deep(.v-card-text) {
+  width: 100%;
+  padding: clamp(28px, 3.2vw, 42px);
+}
+
+.login-card__header {
+  margin-bottom: 24px;
+}
+
+.login-card__header p {
+  margin: 0 0 6px;
+  color: rgb(var(--v-theme-primary));
+  font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-card__header h2 {
+  margin: 0;
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.login-card :deep(.v-field) {
+  border-radius: 8px;
+}
+
+.login-card :deep(.v-btn) {
+  min-height: 48px;
+  border-radius: 8px;
 }
 
 .two-factor-setup {
@@ -309,7 +458,41 @@ watch(
   background: white;
 }
 
+@media (max-width: 900px) {
+  .login-page {
+    align-items: start;
+    padding: 88px 18px 24px;
+  }
+
+  .login-controls {
+    top: 18px;
+    right: 18px;
+  }
+
+  .login-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .login-brand-panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--app-card-border);
+  }
+
+  .login-kicker {
+    margin-top: 0;
+  }
+
+  .login-brand-panel h1 {
+    font-size: 2.15rem;
+  }
+}
+
 @media (max-width: 600px) {
+  .login-controls {
+    left: 18px;
+    justify-content: flex-end;
+  }
+
   .two-factor-setup {
     grid-template-columns: 1fr;
   }

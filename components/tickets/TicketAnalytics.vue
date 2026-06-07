@@ -1,7 +1,23 @@
 <script setup lang="ts">
+import {
+  ArcElement,
+  Chart as ChartJS,
+  Legend,
+  Tooltip,
+  type ChartData,
+  type ChartOptions,
+} from 'chart.js'
+import { Doughnut } from 'vue-chartjs'
 import StatusPill from '~/components/ui/StatusPill'
 import type { Ticket } from '~/types/api'
 import { TicketCategory, TicketStatus } from '~/types/api'
+import {
+  calculateCompletionRate,
+  countTicketsByCategory,
+  countTicketsByStatus,
+} from '~/utils/ticketAnalytics'
+
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 const props = defineProps<{
   tickets: Ticket[]
@@ -13,36 +29,57 @@ const { t } = useAppI18n()
 const totalTickets = computed(() => props.tickets.length)
 
 const statusCounts = computed(() => {
-  return Object.values(TicketStatus)
-    .filter((value): value is TicketStatus => typeof value === 'number')
-    .map((status) => ({
-      status,
-      label: labels.ticketStatuses[status],
-      color: labels.ticketStatusColors[status],
-      count: props.tickets.filter((ticket) => ticket.status === status).length,
-    }))
+  return countTicketsByStatus(props.tickets).map((item) => ({
+    ...item,
+    label: labels.ticketStatuses[item.status],
+    color: labels.ticketStatusColors[item.status],
+  }))
 })
 
 const categoryCounts = computed(() => {
-  return Object.values(TicketCategory)
-    .filter((value): value is TicketCategory => typeof value === 'number')
-    .map((category) => ({
-      category,
-      label: labels.ticketCategories[category],
-      count: props.tickets.filter((ticket) => ticket.category === category).length,
-    }))
+  return countTicketsByCategory(props.tickets).map((item) => ({
+    ...item,
+    label: labels.ticketCategories[item.category],
+  }))
 })
 
-const resolvedOrClosedCount = computed(() => {
-  return props.tickets.filter((ticket) => {
-    return ticket.status === TicketStatus.Resolved || ticket.status === TicketStatus.Closed
-  }).length
-})
+const completionRate = computed(() => calculateCompletionRate(props.tickets))
 
-const completionRate = computed(() => {
-  if (!totalTickets.value) return 0
-  return Math.round((resolvedOrClosedCount.value / totalTickets.value) * 100)
-})
+const chartColors: Record<TicketStatus, string> = {
+  [TicketStatus.New]: '#f59e0b',
+  [TicketStatus.InProgress]: '#1976d2',
+  [TicketStatus.Resolved]: '#16a34a',
+  [TicketStatus.Closed]: '#64748b',
+}
+
+const statusChartData = computed<ChartData<'doughnut'>>(() => ({
+  labels: statusCounts.value.map((item) => item.label),
+  datasets: [
+    {
+      data: statusCounts.value.map((item) => item.count),
+      backgroundColor: statusCounts.value.map((item) => chartColors[item.status]),
+      borderColor: 'rgba(255, 255, 255, 0.72)',
+      borderWidth: 2,
+      hoverOffset: 6,
+    },
+  ],
+}))
+
+const statusChartOptions: ChartOptions<'doughnut'> = {
+  responsive: true,
+  maintainAspectRatio: false,
+  cutout: '64%',
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      callbacks: {
+        label: (context) => `${context.label}: ${context.parsed}`,
+      },
+    },
+  },
+}
 
 const widthForCount = (count: number) => {
   if (!totalTickets.value) return '0%'
@@ -87,6 +124,14 @@ const getCategoryValue = (item: { count: number }) => item.count
             </div>
           </div>
         </div>
+
+        <div class="status-chart" aria-hidden="true">
+          <Doughnut :data="statusChartData" :options="statusChartOptions" />
+          <div class="status-chart__center">
+            <strong>{{ totalTickets }}</strong>
+            <span>{{ t('tickets.totalShort') }}</span>
+          </div>
+        </div>
       </v-sheet>
     </v-col>
 
@@ -129,6 +174,34 @@ const getCategoryValue = (item: { count: number }) => item.count
 .status-bars {
   display: grid;
   gap: 14px;
+}
+
+.status-chart {
+  position: relative;
+  max-width: 220px;
+  height: 170px;
+  margin: 18px auto 0;
+}
+
+.status-chart__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+.status-chart__center strong {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.status-chart__center span {
+  color: rgba(var(--v-theme-on-surface), 0.62);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .status-row {

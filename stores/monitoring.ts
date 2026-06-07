@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 
 export type MonitoringLevel = 'info' | 'warning' | 'error'
@@ -36,6 +37,20 @@ const serializeError = (error: unknown) => {
 export const useMonitoringStore = defineStore('monitoring', () => {
   const events = useLocalStorage<MonitoringEvent[]>('helpdesk-monitoring-events', [])
 
+  const levelCounts = computed(() => {
+    return events.value.reduce<Record<MonitoringLevel, number>>(
+      (counts, event) => {
+        counts[event.level] += 1
+        return counts
+      },
+      {
+        info: 0,
+        warning: 0,
+        error: 0,
+      },
+    )
+  })
+
   const capture = (event: Omit<MonitoringEvent, 'id' | 'createdAt'>) => {
     events.value = [
       {
@@ -66,15 +81,26 @@ export const useMonitoringStore = defineStore('monitoring', () => {
     })
   }
 
+  const captureWarning = (message: string, source: string, details?: string) => {
+    capture({
+      level: 'warning',
+      source,
+      message,
+      details,
+    })
+  }
+
   const clear = () => {
     events.value = []
   }
 
   return {
     events,
+    levelCounts,
     capture,
     captureError,
     captureInfo,
+    captureWarning,
     clear,
   }
 })

@@ -28,8 +28,10 @@ export const useSignalRNotifications = () => {
     const hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(config.public.notificationHubPath, {
         accessTokenFactory: () => authStore.token || '',
+        transport: signalR.HttpTransportType.LongPolling,
       })
       .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.None)
       .build()
 
     hubConnection.on('ReceiveNewTicket', (ticket: TicketCreatedEvent) => {
