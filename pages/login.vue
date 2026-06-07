@@ -217,7 +217,8 @@ watch(
               type="info"
               variant="tonal"
               density="comfortable"
-              class="mb-4"
+              :icon="false"
+              class="mb-4 two-factor-alert"
             >
               <div class="two-factor-setup">
                 <div class="two-factor-setup__qr">
@@ -230,7 +231,7 @@ watch(
                   />
                   <v-progress-circular v-else indeterminate color="primary" />
                 </div>
-                <div>
+                <div class="two-factor-setup__content">
                   <div class="font-weight-bold mb-1">
                     {{ t('auth.setupQrTitle') }}
                   </div>
@@ -443,9 +444,9 @@ watch(
 
 .two-factor-setup {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 16px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  justify-items: center;
 }
 
 .two-factor-setup__qr {
@@ -456,6 +457,17 @@ watch(
   padding: 8px;
   border-radius: 16px;
   background: white;
+}
+
+.two-factor-setup__content {
+  min-width: 0;
+  width: 100%;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.two-factor-alert :deep(.v-alert__content) {
+  width: 100%;
 }
 
 @media (max-width: 900px) {
