@@ -1,0 +1,15 @@
+node_modules
+.nuxt
+.output
+.nitro
+.cache
+dist
+test-results
+logs
+*.log
+.env
+.env.*
+!.env.example
+.git
+.idea
+.fleet
