@@ -42,9 +42,6 @@ const { t } = useAppI18n()
           <div class="font-weight-medium">
             {{ ticket.title }}
           </div>
-          <div class="text-caption text-medium-emphasis ticket-description">
-            {{ ticket.description }}
-          </div>
         </td>
         <td>{{ labels.ticketCategories[ticket.category] }}</td>
         <td>
@@ -59,9 +56,6 @@ const { t } = useAppI18n()
             class="status-select"
             @update:model-value="emit('update-status', ticket, $event)"
           />
-          <div class="text-caption text-medium-emphasis mt-1">
-            {{ labels.ticketStatuses[ticket.status] }}
-          </div>
         </td>
         <td>
           <div>{{ ticket.creatorEmail || t('tickets.dataMissing') }}</div>
@@ -89,10 +83,4 @@ const { t } = useAppI18n()
   min-width: 160px;
 }
 
-.ticket-description {
-  max-width: 440px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 </style>

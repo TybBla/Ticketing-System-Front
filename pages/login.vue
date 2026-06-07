@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import QRCode from 'qrcode'
 import type { LoginResponse } from '~/types/api'
 import { getApiErrorMessage } from '~/utils/apiError'
 
@@ -22,6 +23,7 @@ const requires2FASetup = ref(false)
 const isTwoFactorStep = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref('')
+const qrCodeDataUrl = ref('')
 
 const loginRules = {
   email: [
@@ -41,9 +43,32 @@ const redirectAfterLogin = async () => {
   await router.push(redirect)
 }
 
+const otpAuthUri = computed(() => {
+  if (!secretKey.value) return ''
+
+  const issuer = t('app.title')
+  const account = email.value || 'admin'
+  const label = `${issuer}:${account}`
+  const params = new URLSearchParams({
+    secret: secretKey.value.replace(/\s/g, ''),
+    issuer,
+    algorithm: 'SHA1',
+    digits: '6',
+    period: '30',
+  })
+
+  return `otpauth://totp/${encodeURIComponent(label)}?${params.toString()}`
+})
+
+const shouldShowQrSetup = computed(() => {
+  return isTwoFactorStep.value && Boolean(secretKey.value)
+})
+
 const handleLogin = async () => {
   errorMessage.value = ''
   isLoading.value = true
+  requires2FASetup.value = false
+  secretKey.value = ''
 
   try {
     const response = await apiFetch<LoginResponse>('/api/Auth/login', {
@@ -102,6 +127,25 @@ const handle2FA = async () => {
     isLoading.value = false
   }
 }
+
+watch(
+  () => [shouldShowQrSetup.value, otpAuthUri.value] as const,
+  async ([shouldGenerateQr, uri]) => {
+    qrCodeDataUrl.value = ''
+
+    if (!shouldGenerateQr || !uri) return
+
+    qrCodeDataUrl.value = await QRCode.toDataURL(uri, {
+      width: 220,
+      margin: 2,
+      color: {
+        dark: '#17344d',
+        light: '#ffffff',
+      },
+    })
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -130,13 +174,47 @@ const handle2FA = async () => {
             </v-alert>
 
             <v-alert
-              v-if="requires2FASetup && secretKey"
+              v-if="isTwoFactorStep && !shouldShowQrSetup"
               type="info"
               variant="tonal"
               density="comfortable"
               class="mb-4"
             >
-              {{ t('auth.setup', { secret: secretKey }) }}
+              <div class="font-weight-bold mb-1">
+                {{ t('auth.existing2FATitle') }}
+              </div>
+              <div class="text-body-2">
+                {{ t('auth.existing2FASubtitle') }}
+              </div>
+            </v-alert>
+
+            <v-alert
+              v-if="shouldShowQrSetup"
+              type="info"
+              variant="tonal"
+              density="comfortable"
+              class="mb-4"
+            >
+              <div class="two-factor-setup">
+                <div class="two-factor-setup__qr">
+                  <v-img
+                    v-if="qrCodeDataUrl"
+                    :src="qrCodeDataUrl"
+                    :alt="t('auth.setupQrAlt')"
+                    width="180"
+                    height="180"
+                  />
+                  <v-progress-circular v-else indeterminate color="primary" />
+                </div>
+                <div>
+                  <div class="font-weight-bold mb-1">
+                    {{ t('auth.setupQrTitle') }}
+                  </div>
+                  <div class="text-body-2 mb-3">
+                    {{ t('auth.setupQrSubtitle') }}
+                  </div>
+                </div>
+              </div>
             </v-alert>
 
             <v-form v-if="!isTwoFactorStep" @submit.prevent="handleLogin">
@@ -212,5 +290,32 @@ const handle2FA = async () => {
 <style scoped>
 .login-page {
   min-height: 100vh;
+}
+
+.two-factor-setup {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.two-factor-setup__qr {
+  display: grid;
+  place-items: center;
+  width: 196px;
+  min-height: 196px;
+  padding: 8px;
+  border-radius: 16px;
+  background: white;
+}
+
+@media (max-width: 600px) {
+  .two-factor-setup {
+    grid-template-columns: 1fr;
+  }
+
+  .two-factor-setup__qr {
+    width: 100%;
+  }
 }
 </style>

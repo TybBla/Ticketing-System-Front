@@ -83,6 +83,13 @@ onMounted(fetchTickets)
 
       <TicketsTicketAnalytics :tickets="analyticsTickets" />
 
+      <TicketsTicketKanbanBoard
+        :tickets="filteredTickets"
+        :is-loading="isLoading"
+        @update-status="updateTicketStatus"
+        @select="openTicketDetails"
+      />
+
       <v-sheet rounded="lg" border>
         <TicketsTicketFilters
           v-model="search"

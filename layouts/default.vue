@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { useOnline } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
-const online = useOnline()
+const preferencesStore = usePreferencesStore()
 const { isConnected } = useSignalRNotifications()
 const { t } = useAppI18n()
+const { uiTheme } = storeToRefs(preferencesStore)
+const isDarkTheme = computed(() => uiTheme.value === 'helpdeskDark')
 
 const logout = async () => {
   authStore.logout()
@@ -60,20 +62,28 @@ watch(
       <v-spacer />
 
       <I18nLocaleSwitcher class="mr-2" />
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            :icon="isDarkTheme ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+            variant="tonal"
+            color="primary"
+            class="mr-2"
+            :aria-label="isDarkTheme ? t('app.lightTheme') : t('app.darkTheme')"
+            @click="preferencesStore.toggleUiTheme()"
+          />
+        </template>
+        <span>{{ isDarkTheme ? t('app.lightTheme') : t('app.darkTheme') }}</span>
+      </v-tooltip>
       <v-chip
         v-if="authStore.isAdmin"
         :color="isConnected ? 'success' : 'warning'"
         variant="tonal"
         class="mr-2"
+        :prepend-icon="isConnected ? 'mdi-bell-ring-outline' : 'mdi-bell-off-outline'"
       >
         {{ isConnected ? t('app.live') : t('app.liveOffline') }}
-      </v-chip>
-      <v-chip
-        :color="online ? 'success' : 'error'"
-        variant="tonal"
-        class="mr-2"
-      >
-        {{ online ? t('app.online') : t('app.offline') }}
       </v-chip>
       <v-chip v-if="authStore.email" variant="tonal" color="primary" class="mr-3">
         {{ authStore.email }}
@@ -102,19 +112,42 @@ watch(
 
 .app-bar {
   margin: 12px;
-  border: 1px solid rgba(95, 109, 126, 0.18);
+  border: 1px solid var(--app-card-border);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(250, 251, 253, 0.94) 0%, rgba(238, 242, 247, 0.94) 100%) !important;
-  box-shadow: 0 18px 42px rgba(42, 53, 70, 0.08);
+  background: var(--app-bar-bg) !important;
+  box-shadow: var(--app-bar-shadow);
   backdrop-filter: blur(12px);
 }
 
 .app-bar__title {
-  color: #17344d;
+  flex: 0 0 auto;
+  min-width: 320px;
+  color: var(--app-title-color);
+  font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 1.62rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.045em;
+  line-height: 1.2;
+  overflow: visible;
+  text-transform: uppercase;
+  transform: none;
+  transform-origin: left center;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.38),
+    0 0 18px rgba(31, 78, 121, 0.12),
+    var(--app-title-shadow);
+}
+
+.app-bar__title :deep(.v-toolbar-title__placeholder) {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.2;
 }
 
 .app-bar__nav-btn {
-  color: #34495d;
+  color: rgb(var(--v-theme-on-surface));
+  opacity: 0.86;
 }
 
 :deep(.v-toolbar__content) {

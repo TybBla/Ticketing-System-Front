@@ -1,3 +1,6 @@
+@import "@fontsource/jetbrains-mono/700.css";
+@import "@fontsource/jetbrains-mono/800.css";
+
 html {
   overflow-y: auto;
   background: #dfe4ea;
@@ -7,10 +10,47 @@ body {
   margin: 0;
   color: #1f2933;
   font-family: "Segoe UI", "Inter", system-ui, sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 28rem),
+  background: #dfe4ea;
+}
+
+.v-theme--helpdeskLight {
+  --app-bg:
     radial-gradient(circle at top right, rgba(31, 78, 121, 0.08), transparent 22rem),
     linear-gradient(180deg, #e7ebf0 0%, #dde3ea 100%);
+  --app-auth-bg:
+    radial-gradient(circle at 88% 18%, rgba(196, 127, 23, 0.1), transparent 20rem),
+    linear-gradient(135deg, #e5e9ee 0%, #dce2e9 52%, #e8ecef 100%);
+  --app-bar-bg: linear-gradient(180deg, rgba(250, 251, 253, 0.94) 0%, rgba(238, 242, 247, 0.94) 100%);
+  --app-bar-shadow: 0 18px 42px rgba(42, 53, 70, 0.08);
+  --app-card-bg: linear-gradient(180deg, rgba(250, 251, 253, 0.96) 0%, rgba(241, 244, 248, 0.96) 100%);
+  --app-card-border: rgba(95, 109, 126, 0.18);
+  --app-card-shadow: 0 18px 42px rgba(42, 53, 70, 0.06);
+  --app-field-bg: rgba(255, 255, 255, 0.5);
+  --app-title-color: #12344f;
+  --app-title-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  --app-table-head: #516173;
+  --app-table-even: rgba(255, 255, 255, 0.24);
+  --app-table-hover: rgba(31, 78, 121, 0.08);
+}
+
+.v-theme--helpdeskDark {
+  --app-bg:
+    radial-gradient(circle at top right, rgba(214, 155, 58, 0.08), transparent 22rem),
+    linear-gradient(180deg, #131c27 0%, #0f1720 100%);
+  --app-auth-bg:
+    radial-gradient(circle at 88% 18%, rgba(214, 155, 58, 0.1), transparent 20rem),
+    linear-gradient(135deg, #141f2b 0%, #101720 52%, #17212d 100%);
+  --app-bar-bg: linear-gradient(180deg, rgba(29, 42, 57, 0.94) 0%, rgba(20, 31, 43, 0.94) 100%);
+  --app-bar-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  --app-card-bg: linear-gradient(180deg, rgba(30, 42, 56, 0.96) 0%, rgba(22, 31, 43, 0.96) 100%);
+  --app-card-border: rgba(170, 190, 210, 0.16);
+  --app-card-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+  --app-field-bg: rgba(255, 255, 255, 0.05);
+  --app-title-color: #d8ecff;
+  --app-title-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+  --app-table-head: #aab8c7;
+  --app-table-even: rgba(255, 255, 255, 0.035);
+  --app-table-hover: rgba(110, 168, 215, 0.12);
 }
 
 #__nuxt {
@@ -18,15 +58,16 @@ body {
 }
 
 .v-application {
-  background: transparent !important;
+  background: var(--app-bg) !important;
+  color: rgb(var(--v-theme-on-background));
 }
 
 .v-card,
 .v-sheet,
 .v-dialog > .v-overlay__content > .v-card {
-  border: 1px solid rgba(95, 109, 126, 0.18) !important;
-  box-shadow: 0 18px 42px rgba(42, 53, 70, 0.06) !important;
-  background: linear-gradient(180deg, rgba(250, 251, 253, 0.96) 0%, rgba(241, 244, 248, 0.96) 100%) !important;
+  border: 1px solid var(--app-card-border) !important;
+  box-shadow: var(--app-card-shadow) !important;
+  background: var(--app-card-bg) !important;
   backdrop-filter: blur(8px);
 }
 
@@ -45,7 +86,7 @@ body {
 }
 
 .v-field {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--app-field-bg);
 }
 
 .v-chip {
@@ -57,14 +98,14 @@ body {
 }
 
 .v-table > .v-table__wrapper > table > thead > tr > th {
-  color: #516173;
+  color: var(--app-table-head);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .v-table tbody tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.24);
+  background: var(--app-table-even);
 }
 
 .page-enter-active,
@@ -87,5 +128,5 @@ body {
 }
 
 .v-table tbody tr:hover {
-  background: rgba(31, 78, 121, 0.08);
+  background: var(--app-table-hover);
 }

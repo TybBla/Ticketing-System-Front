@@ -22,8 +22,8 @@ export const helpdeskLabels: HelpdeskLabels = {
   ticketStatuses: {
     [TicketStatus.New]: 'Nowe',
     [TicketStatus.InProgress]: 'W toku',
-    [TicketStatus.Resolved]: 'Rozwiazane',
-    [TicketStatus.Closed]: 'Zamkniete',
+    [TicketStatus.Resolved]: 'Rozwiązane',
+    [TicketStatus.Closed]: 'Zamknięte',
   },
   ticketStatusColors: {
     [TicketStatus.New]: 'warning',

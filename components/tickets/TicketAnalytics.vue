@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import StatusPill from '~/components/ui/StatusPill'
 import type { Ticket } from '~/types/api'
 import { TicketCategory, TicketStatus } from '~/types/api'
 
@@ -47,6 +48,10 @@ const widthForCount = (count: number) => {
   if (!totalTickets.value) return '0%'
   return `${Math.max(8, Math.round((count / totalTickets.value) * 100))}%`
 }
+
+const getCategoryKey = (item: { category: TicketCategory }) => item.category
+const getCategoryLabel = (item: { label: string }) => item.label
+const getCategoryValue = (item: { count: number }) => item.count
 </script>
 
 <template>
@@ -70,9 +75,7 @@ const widthForCount = (count: number) => {
         <div class="status-bars">
           <div v-for="item in statusCounts" :key="item.status" class="status-row">
             <div class="status-row__label">
-              <v-chip :color="item.color" size="small" variant="tonal">
-                {{ item.label }}
-              </v-chip>
+              <StatusPill :label="item.label" :color="item.color" />
               <span class="text-body-2 font-weight-medium">{{ item.count }}</span>
             </div>
             <div class="status-row__track">
@@ -106,12 +109,12 @@ const widthForCount = (count: number) => {
             <span class="text-h5 font-weight-bold">{{ completionRate }}%</span>
           </v-progress-circular>
 
-          <div class="completion__legend">
-            <div v-for="item in categoryCounts" :key="item.category" class="d-flex justify-space-between">
-              <span class="text-body-2 text-medium-emphasis">{{ item.label }}</span>
-              <strong>{{ item.count }}</strong>
-            </div>
-          </div>
+          <UiGenericStatList
+            :items="categoryCounts"
+            :get-key="getCategoryKey"
+            :get-label="getCategoryLabel"
+            :get-value="getCategoryValue"
+          />
         </div>
       </v-sheet>
     </v-col>
@@ -170,15 +173,40 @@ const widthForCount = (count: number) => {
   background: #64748b;
 }
 
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-pill--warning {
+  color: #8a4f00;
+  background: #fff0d8;
+}
+
+.status-pill--primary {
+  color: #174b7a;
+  background: #dcecff;
+}
+
+.status-pill--success {
+  color: #1f6b3b;
+  background: #def5e7;
+}
+
+.status-pill--grey {
+  color: #526173;
+  background: #edf0f4;
+}
+
 .completion {
   display: flex;
   align-items: center;
   gap: 24px;
 }
 
-.completion__legend {
-  display: grid;
-  flex: 1;
-  gap: 10px;
-}
 </style>
