@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { CreateUserRequest } from '~/types/api'
 import { Role } from '~/types/api'
+import {
+  emailRule,
+  minLengthRule,
+  requiredRule,
+} from '~/utils/formRules'
 
 defineProps<{
   isSubmitting?: boolean
@@ -29,13 +34,13 @@ const roles = computed(() => [
 ])
 
 const emailRules = [
-  (value: string) => Boolean(value) || t('auth.emailRequired'),
-  (value: string) => /.+@.+\..+/.test(value) || t('auth.emailInvalid'),
+  requiredRule(() => t('auth.emailRequired')),
+  emailRule(() => t('auth.emailInvalid')),
 ]
 
 const passwordRules = [
-  (value: string) => Boolean(value) || t('auth.passwordRequired'),
-  (value: string) => value.length >= 6 || t('users.passwordMin'),
+  requiredRule(() => t('auth.passwordRequired')),
+  minLengthRule(6, () => t('users.passwordMin')),
 ]
 
 const resetDraft = () => {

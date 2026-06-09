@@ -281,5 +281,4 @@ const getCategoryValue = (item: { count: number }) => item.count
   align-items: center;
   gap: 24px;
 }
-
 </style>

@@ -121,7 +121,7 @@ const endDrag = () => {
           >
             <span class="kanban-card__title">{{ ticket.title }}</span>
             <span class="kanban-card__meta">
-              {{ labels.ticketCategories[ticket.category] }} · {{ ticket.creatorEmail || t('tickets.dataMissing') }}
+              {{ labels.ticketCategories[ticket.category] }} - {{ ticket.creatorEmail || t('tickets.dataMissing') }}
             </span>
           </button>
         </div>

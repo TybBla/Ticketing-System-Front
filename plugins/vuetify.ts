@@ -1,7 +1,7 @@
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import { vFocus } from '~/directives/focus' // Import naszej dyrektywy
+import { vFocus } from '~/directives/focus'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
@@ -75,7 +75,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   nuxtApp.vueApp.use(vuetify)
-  
-  // Rejestracja globalna dyrektywy v-focus
   nuxtApp.vueApp.directive('focus', vFocus)
 })

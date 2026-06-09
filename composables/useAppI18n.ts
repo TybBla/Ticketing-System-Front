@@ -1,5 +1,5 @@
 import { storeToRefs } from 'pinia'
-import type { Locale } from '~/utils/i18n'
+import type { Locale } from '~/utils/i18nTypes'
 import { locales, resolveMessage } from '~/utils/i18n'
 
 type Params = Record<string, string | number>
