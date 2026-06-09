@@ -39,6 +39,29 @@ Frontend będzie dostępny pod adresem:
 http://localhost:3000
 ```
 
+## Testowanie
+
+Testy znajdują się w katalogu `tests`.
+
+Struktura testów:
+
+- `tests/ticketAnalytics.test.ts` - testy jednostkowe logiki analitycznej zgłoszeń uruchamiane przez Vitest
+- `tests/e2e/ticket-flow.spec.ts` - test E2E w Playwright sprawdzający logowanie pracownika i utworzenie zgłoszenia
+
+Uruchomienie testów jednostkowych:
+
+```bash
+npm run test
+```
+
+Uruchomienie testu E2E:
+
+```bash
+npm run test:e2e
+```
+
+Test E2E uruchamia aplikację przez konfigurację Playwrighta z pliku `playwright.config.ts`. Jeśli aplikacja działa już lokalnie pod `http://localhost:3000`, Playwright użyje istniejącego serwera.
+
 ## Build Produkcyjny
 
 ```bash
