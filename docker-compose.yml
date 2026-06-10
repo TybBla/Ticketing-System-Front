@@ -23,7 +23,7 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  # 3. GŁÓWNE API (Pobierane z GHCR)
+  # 3. GŁÓWNE API
   main-api:
     image: ghcr.io/porzeraklon/ticketing-main-api:latest
     container_name: ticketing-main-api
@@ -40,7 +40,7 @@ services:
       - mariadb
       - rabbitmq
 
-  # 4. WORKER SERVICE (Pobierane z GHCR)
+  # 4. WORKER SERVICE
   worker-service:
     image: ghcr.io/porzeraklon/ticketing-worker-service:latest
     container_name: ticketing-worker-service
@@ -56,7 +56,7 @@ services:
       - rabbitmq
       - main-api
 
-  # 5. FRONTEND (Pobierany z GHCR)
+  # 5. FRONTEND
   frontend:
     image: ghcr.io/porzeraklon/ticketing-frontend:latest
     container_name: ticketing-frontend
