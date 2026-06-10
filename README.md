@@ -1,5 +1,54 @@
 # Ticketing System Frontend
 
+## Uruchomienie całej aplikacji przez Docker Compose
+
+Ten wariant uruchamia cały system: bazę MariaDB, RabbitMQ, główne API, worker powiadomień oraz frontend.
+
+Wymagania:
+
+- Docker Desktop
+- Docker Compose
+
+Przed pierwszym uruchomieniem utwórz w katalogu projektu plik `.env`:
+
+```env
+MARIADB_ROOT_PASSWORD=root_password
+DB_PASSWORD=ticketing_password
+JWT_SECRET=very-long-secret-key-for-ticketing-system-123456789=
+```
+
+Następnie uruchom cały system:
+
+```bash
+docker compose up -d
+```
+
+Po uruchomieniu aplikacja będzie dostępna pod adresem:
+
+```text
+http://localhost:3000
+```
+
+Przydatne adresy usług:
+
+- frontend: `http://localhost:3000`
+- backend API: `http://localhost:5000`
+- worker powiadomień: `http://localhost:5001`
+- RabbitMQ Management: `http://localhost:15672`
+- MariaDB: `localhost:3307`
+
+Zatrzymanie kontenerów bez usuwania danych:
+
+```bash
+docker compose down
+```
+
+Pełne wyczyszczenie kontenerów razem z wolumenem bazy danych:
+
+```bash
+docker compose down -v
+```
+
 Frontend aplikacji HelpDesk/Ticketing zbudowany w Nuxt, TypeScript, Vuetify i Pinia. Aplikacja działa jako SPA i komunikuje się z backendem przez lokalne endpointy Nuxta `/api/...` oraz `/notifications`, które przekazują żądania do backendu ASP.NET Core.
 
 ## Wymagania
